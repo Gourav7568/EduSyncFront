@@ -1,6 +1,51 @@
-# Getting Started with Create React App
+# EduSync LMS - Smart Learning Management & Assessment Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+EduSync is a full-stack Learning Management System (LMS) built to simulate a real-world educational platform. It enables students to take courses and assessments while allowing instructors to create and manage educational content.
+
+This repository contains the frontend of the EduSync platform, built with React.js and Bootstrap.
+
+## Features
+
+- **User Authentication**: Register and login functionality with role-based access (Student/Instructor)
+- **Course Management**: Browse, create, update, and delete courses
+- **Assessment System**: Create and take quizzes with automatic grading
+- **Results Tracking**: View assessment results and performance
+- **Responsive Design**: Fully responsive UI built with Bootstrap
+
+## Technical Stack
+
+- **Frontend**: React.js, React Router, Bootstrap
+- **API Communication**: Axios for RESTful API calls
+- **State Management**: React Hooks
+- **Styling**: Custom CSS with Bootstrap integration
+
+## Project Structure
+
+```
+src/
+├── assets/          # Static assets and custom CSS
+├── components/      # UI components organized by feature
+│   ├── auth/        # Authentication components
+│   ├── common/      # Shared components
+│   ├── courses/     # Course-related components
+│   ├── assessments/ # Assessment-related components
+│   └── results/     # Result display components
+├── pages/           # Page components
+├── services/        # API services and business logic
+└── utils/           # Utility functions
+```
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+- Backend API running (ASP.NET Core Web API)
+
+### Configuration
+
+Make sure to update the API URL in `src/services/api.js` to point to your backend server.
 
 ## Available Scripts
 
