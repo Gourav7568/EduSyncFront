@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import apiClient from '../../services/apiClient';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import apiClient from "../../services/apiClient";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Check for session expired parameter
   const searchParams = new URLSearchParams(location.search);
-  const sessionExpired = searchParams.get('expired') === 'true';
-  
+  const sessionExpired = searchParams.get("expired") === "true";
+
   // Minimal check for already logged in state
   // We'll let the AuthContext handle most of the auth state management
   useEffect(() => {
     // If there's already a token and user data, navigate away from login page
-    const token = localStorage.getItem('authToken');
-    const user = localStorage.getItem('user');
+    const token = localStorage.getItem("authToken");
+    const user = localStorage.getItem("user");
     if (token && user) {
-      console.log('User data already in localStorage, skipping login page');
-      navigate('/', { replace: true });
+      console.log("User data already in localStorage, skipping login page");
+      navigate("/", { replace: true });
       return;
     }
   }, []);
@@ -40,22 +40,23 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Prevent multiple submissions
     if (loading) return;
-    
+
     setLoading(true);
     setError(null);
 
     try {
       // Your exact API endpoint
-      const url = "https://localhost:7252/api/Users/login";
-      console.log('Sending login request to:', url);
-      
+      const url =
+        "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net/api/Users/login";
+      console.log("Sending login request to:", url);
+
       // Option 1: Send credentials as-is (camelCase)
       const response = await apiClient.post(url, credentials);
-      console.log('Login response:', response.data);
-      
+      console.log("Login response:", response.data);
+
       // Option 2: Format for ASP.NET Core API (PascalCase)
       // Uncomment this if your API expects PascalCase
       /*
@@ -64,56 +65,58 @@ const Login = () => {
         Password: credentials.password
       });
       */
-      
+
       // Extract data from response
       const data = response.data;
-      console.log('Processing login data:', data);
-      
+      console.log("Processing login data:", data);
+
       // Debugging what's in the response
       if (!data) {
-        console.error('No data received from login API');
-        setError('Invalid response from server');
+        console.error("No data received from login API");
+        setError("Invalid response from server");
         setLoading(false);
         return;
       }
-      
+
       // Get the user data from the response
       const userData = data.user || data.userData || data;
-      
+
       // Your backend API doesn't return a token, so we'll create one using the userId
       // This approach works for simple authentication scenarios
-      const generatedToken = userData.userId ? 
-        btoa(`${userData.userId}:${userData.email}:${new Date().getTime()}`) : 
-        'user-authenticated-token';
-      
+      const generatedToken = userData.userId
+        ? btoa(`${userData.userId}:${userData.email}:${new Date().getTime()}`)
+        : "user-authenticated-token";
+
       // Store authentication data
-      localStorage.setItem('authToken', generatedToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-      console.log('Saved authentication data with generated token');
-      
+      localStorage.setItem("authToken", generatedToken);
+      localStorage.setItem("user", JSON.stringify(userData));
+      console.log("Saved authentication data with generated token");
+
       // Update state
       setCurrentUser(userData);
-      console.log('Login successful, redirecting...');
-      
+      console.log("Login successful, redirecting...");
+
       // Set the current user first before redirecting
       setCurrentUser(userData);
-      
+
       // IMPORTANT: Use window.location.href instead of navigate for a hard redirect
       // This completely eliminates the blinking by forcing a fresh page load
-      console.log('Login successful - hard redirecting to dashboard');
-      
+      console.log("Login successful - hard redirecting to dashboard");
+
       // Check if there's a redirect URL stored
-      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+      const redirectUrl = sessionStorage.getItem("redirectAfterLogin");
       if (redirectUrl) {
-        sessionStorage.removeItem('redirectAfterLogin');
+        sessionStorage.removeItem("redirectAfterLogin");
         window.location.href = redirectUrl;
       } else {
-        window.location.href = '/';
+        window.location.href = "/";
       }
-      
     } catch (err) {
-      console.error('Login failed:', err);
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      console.error("Login failed:", err);
+      setError(
+        err.response?.data?.message ||
+          "Login failed. Please check your credentials."
+      );
     } finally {
       setLoading(false);
     }
@@ -127,21 +130,27 @@ const Login = () => {
             <div className="row g-0">
               {/* Left side - Image and branding */}
               <div className="col-lg-5 d-none d-lg-block">
-                <div className="bg-primary h-100 d-flex flex-column justify-content-center text-white p-4" 
+                <div
+                  className="bg-primary h-100 d-flex flex-column justify-content-center text-white p-4"
                   style={{
-                    background: 'linear-gradient(135deg, #4e54c8, #8f94fb)',
-                    minHeight: '500px'
-                  }}>
+                    background: "linear-gradient(135deg, #4e54c8, #8f94fb)",
+                    minHeight: "500px",
+                  }}
+                >
                   <div className="text-center mb-5">
                     <h1 className="display-4 fw-bold mb-4">EduSync</h1>
-                    <p className="lead">Smart Learning Management & Assessment Platform</p>
+                    <p className="lead">
+                      Smart Learning Management & Assessment Platform
+                    </p>
                   </div>
                   <div className="mt-auto text-center">
-                    <p className="mb-0 small opacity-75">© {new Date().getFullYear()} EduSync LMS</p>
+                    <p className="mb-0 small opacity-75">
+                      © {new Date().getFullYear()} EduSync LMS
+                    </p>
                   </div>
                 </div>
               </div>
-              
+
               {/* Right side - Login form */}
               <div className="col-lg-7">
                 <div className="card-body p-4 p-lg-5">
@@ -149,7 +158,7 @@ const Login = () => {
                     <h2 className="fw-bold">Welcome Back</h2>
                     <p className="text-muted">Sign in to continue to EduSync</p>
                   </div>
-                  
+
                   {/* Session expired alert */}
                   {sessionExpired && (
                     <div className="alert alert-warning" role="alert">
@@ -157,7 +166,7 @@ const Login = () => {
                       Your session has expired. Please login again.
                     </div>
                   )}
-                  
+
                   {/* Error alert */}
                   {error && (
                     <div className="alert alert-danger" role="alert">
@@ -165,10 +174,12 @@ const Login = () => {
                       {error}
                     </div>
                   )}
-                  
+
                   <form onSubmit={handleSubmit} className="needs-validation">
                     <div className="mb-4">
-                      <label htmlFor="email" className="form-label fw-medium">Email Address</label>
+                      <label htmlFor="email" className="form-label fw-medium">
+                        Email Address
+                      </label>
                       <div className="input-group">
                         <span className="input-group-text bg-light">
                           <i className="bi bi-envelope"></i>
@@ -185,11 +196,18 @@ const Login = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="mb-4">
                       <div className="d-flex justify-content-between align-items-center">
-                        <label htmlFor="password" className="form-label fw-medium">Password</label>
-                        <Link to="#" className="small text-decoration-none">Forgot Password?</Link>
+                        <label
+                          htmlFor="password"
+                          className="form-label fw-medium"
+                        >
+                          Password
+                        </label>
+                        <Link to="#" className="small text-decoration-none">
+                          Forgot Password?
+                        </Link>
                       </div>
                       <div className="input-group">
                         <span className="input-group-text bg-light">
@@ -207,7 +225,7 @@ const Login = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="form-check mb-4">
                       <input
                         type="checkbox"
@@ -218,7 +236,7 @@ const Login = () => {
                         Remember me on this device
                       </label>
                     </div>
-                    
+
                     <div className="d-grid gap-2 mb-4">
                       <button
                         type="submit"
@@ -227,19 +245,29 @@ const Login = () => {
                       >
                         {loading ? (
                           <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span
+                              className="spinner-border spinner-border-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
                             Signing in...
                           </>
                         ) : (
-                          'Sign In'
+                          "Sign In"
                         )}
                       </button>
                     </div>
                   </form>
-                  
+
                   <div className="text-center">
                     <p className="mb-0">
-                      Don't have an account? <Link to="/register" className="fw-medium text-decoration-none">Sign Up</Link>
+                      Don't have an account?{" "}
+                      <Link
+                        to="/register"
+                        className="fw-medium text-decoration-none"
+                      >
+                        Sign Up
+                      </Link>
                     </p>
                   </div>
                 </div>

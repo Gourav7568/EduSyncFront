@@ -1,13 +1,14 @@
-import apiClient from './apiClient';
+import apiClient from "./apiClient";
 
 // Base API URL - change this to your backend API URL
-const API_BASE_URL = 'https://localhost:7252';
+const API_BASE_URL =
+  "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net";
 
 const getAllResults = async () => {
   // Direct API URL - customize this to match your backend API
   const url = `${API_BASE_URL}/api/Results`;
-  console.log('Fetching all results from:', url);
-  
+  console.log("Fetching all results from:", url);
+
   const response = await apiClient.get(url);
   return response.data;
 };
@@ -15,8 +16,8 @@ const getAllResults = async () => {
 const getResultById = async (id) => {
   // Direct API URL - customize this to match your backend API
   const url = `${API_BASE_URL}/api/Results/${id}`;
-  console.log('Fetching result details from:', url);
-  
+  console.log("Fetching result details from:", url);
+
   const response = await apiClient.get(url);
   return response.data;
 };
@@ -24,11 +25,11 @@ const getResultById = async (id) => {
 const createResult = async (resultData) => {
   // Direct API URL - customize this to match your backend API
   const url = `${API_BASE_URL}/api/Results`;
-  console.log('Creating result at:', url);
-  
+  console.log("Creating result at:", url);
+
   // Option 1: Send data as-is (camelCase)
   const response = await apiClient.post(url, resultData);
-  
+
   // Option 2: Format for ASP.NET Core API (PascalCase)
   // Uncomment this if your API expects PascalCase
   /*
@@ -39,18 +40,18 @@ const createResult = async (resultData) => {
     // Add other fields with PascalCase formatting
   });
   */
-  
+
   return response.data;
 };
 
 const updateResult = async (id, resultData) => {
   // Direct API URL - customize this to match your backend API
   const url = `${API_BASE_URL}/api/Results/${id}`;
-  console.log('Updating result at:', url);
-  
+  console.log("Updating result at:", url);
+
   // Option 1: Send data as-is (camelCase)
   const response = await apiClient.put(url, resultData);
-  
+
   // Option 2: Format for ASP.NET Core API (PascalCase)
   // Uncomment this if your API expects PascalCase
   /*
@@ -61,15 +62,15 @@ const updateResult = async (id, resultData) => {
     // Add other fields with PascalCase formatting
   });
   */
-  
+
   return response.data;
 };
 
 const deleteResult = async (id) => {
   // Direct API URL - customize this to match your backend API
   const url = `${API_BASE_URL}/api/Results/${id}`;
-  console.log('Deleting result at:', url);
-  
+  console.log("Deleting result at:", url);
+
   const response = await apiClient.delete(url);
   return response.data;
 };
@@ -79,7 +80,7 @@ const resultService = {
   getResultById,
   createResult,
   updateResult,
-  deleteResult
+  deleteResult,
 };
 
 export default resultService;

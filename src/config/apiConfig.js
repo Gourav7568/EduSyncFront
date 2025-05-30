@@ -4,19 +4,21 @@
  */
 
 // Base API URL - configurable via environment variables
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://localhost:7252/api';
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net/api";
 
 // API endpoints
 const API_ENDPOINTS = {
   // Auth endpoints
   AUTH: {
-    REGISTER: '/AuthController/register',
-    LOGIN: '/AuthController/login',
-    PROFILE: '/AuthController/profile',
+    REGISTER: "/AuthController/register",
+    LOGIN: "/AuthController/login",
+    PROFILE: "/AuthController/profile",
   },
   // Course endpoints
   COURSES: {
-    BASE: '/Courses',
+    BASE: "/Courses",
     ENROLL: (courseId) => `/Courses/${courseId}/enroll`,
     CONTENT: (courseId) => `/Courses/${courseId}/content`,
   },
@@ -40,12 +42,12 @@ const getDefaultRequestOptions = () => {
   return {
     // For CORS preflight requests
     withCredentials: false,
-    
+
     // Additional headers that might help with CORS
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
   };
 };
 
@@ -58,10 +60,10 @@ const setApiBaseUrl = (newBaseUrl) => {
   // For a more permanent solution, use environment variables
   if (newBaseUrl) {
     // Make sure the URL doesn't end with a slash
-    const formattedUrl = newBaseUrl.endsWith('/') 
-      ? newBaseUrl.slice(0, -1) 
+    const formattedUrl = newBaseUrl.endsWith("/")
+      ? newBaseUrl.slice(0, -1)
       : newBaseUrl;
-    
+
     window._apiBaseUrl = formattedUrl;
   }
 };
