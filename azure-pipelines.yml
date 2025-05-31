@@ -3,43 +3,44 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
+# azure-pipelines-frontend.yml
+# This pipeline builds and deploys the React frontend to Azure Static Web Apps
+
+# azure-pipelines-frontend.yml
+
 trigger:
-- main
+  - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
+
+variables:
+  staticWebAppName: 'myedusync'
+  # Make sure `myvariable` is added securely from Azure DevOps Pipeline UI (as a secret variable)
+  myvariable: $(myvariable)
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+  - script: |
+      npm install
+      npm run build
+    displayName: 'Build React App'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+  - task: AzureStaticWebApp@0
+    inputs:
+      app_location: '/'              # Path to your React app source code
+      output_location: 'build'       # NOT 'dist' for Create React App; use 'dist' only for Vite
+      azure_static_web_apps_api_token: $(myvariable)
+    displayName: 'Deploy to Azure Static Web Apps'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+  # Optional: Publish artifacts if needed
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
