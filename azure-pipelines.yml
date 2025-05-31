@@ -17,7 +17,7 @@ pool:
 variables:
   staticWebAppName: 'myedusync'
   # Make sure `myvariable` is added securely from Azure DevOps Pipeline UI (as a secret variable)
-  myvariable: $(myvariable)
+  myvariable: $(newvariable)
 
 steps:
   - task: NodeTool@0
