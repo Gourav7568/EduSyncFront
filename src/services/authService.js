@@ -89,7 +89,8 @@ const login = async (credentials) => {
       password: credentials.password
     };
     
-    console.log('Sending login request with data:', loginData);
+    console.log('Sending login request to:', AUTH.LOGIN);
+    console.log('With data:', { email: loginData.email, password: '***' });
     
     // Make API call to the backend login endpoint
     const response = await api.post(AUTH.LOGIN, loginData, {
@@ -97,21 +98,33 @@ const login = async (credentials) => {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      withCredentials: false
+      withCredentials: false,
+      validateStatus: status => status < 500 // Don't throw for 4xx errors
     });
     
-    // The API should return user data directly
+    console.log('Login response status:', response.status);
+    console.log('Login response data:', response.data);
+    
+    // The API returns a user object with UserId, Name, Email, and Role
     const userData = response.data;
     console.log('Login response:', userData);
     
-    if (!userData) {
-      throw new Error('No user data received from server');
+    if (!userData || !userData.email) {
+      throw new Error('Invalid response from server');
     }
     
-    // Store user data in localStorage
-    storeAuthData(userData);
+    // Store the complete user data
+    const userToStore = {
+      id: userData.userId,
+      name: userData.name,
+      email: userData.email,
+      role: userData.role
+    };
     
-    return { user: userData };
+    // Store user data in localStorage
+    storeAuthData(userToStore);
+    
+    return { user: userToStore };
   } catch (error) {
     console.error('Login failed:', error);
     throw error;

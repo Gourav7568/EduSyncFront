@@ -10,11 +10,11 @@ const API_BASE_URL =
 
 // API endpoints
 const API_ENDPOINTS = {
-  // Auth endpoints
+  // Auth endpoints - using UsersController
   AUTH: {
-    REGISTER: "/AuthController/register",
-    LOGIN: "/AuthController/login",
-    PROFILE: "/AuthController/profile"
+    REGISTER: "/Users/register",
+    LOGIN: "/Users/login",
+    PROFILE: "/Users/me"  // Note: You might want to add this endpoint in your backend
   },
   // Course endpoints
   COURSES: {
