@@ -83,8 +83,16 @@ const register = async (userData) => {
  */
 const login = async (credentials) => {
   try {
-    // Make API call to your real backend login endpoint
-    const response = await api.post(AUTH.LOGIN, credentials, {
+    // Format the credentials to match what the backend expects
+    const loginData = {
+      email: credentials.email,
+      password: credentials.password
+    };
+    
+    console.log('Sending login request with data:', loginData);
+    
+    // Make API call to the backend login endpoint
+    const response = await api.post(AUTH.LOGIN, loginData, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -94,6 +102,7 @@ const login = async (credentials) => {
     
     // The API should return user data directly
     const userData = response.data;
+    console.log('Login response:', userData);
     
     if (!userData) {
       throw new Error('No user data received from server');

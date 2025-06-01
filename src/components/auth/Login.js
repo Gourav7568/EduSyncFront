@@ -42,13 +42,8 @@ const Login = () => {
     setError(null);
 
     try {
-      // Your exact API endpoint
-      const url =
-        "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net/api/Users/login";
-      console.log("Sending login request to:", url);
-
-      // Option 1: Send credentials as-is (camelCase)
       // Use authService to handle login
+      console.log("Attempting to login...");
       const { user } = await authService.login(credentials);
       console.log("Login successful, user:", user);
       
