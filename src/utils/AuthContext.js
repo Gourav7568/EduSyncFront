@@ -23,89 +23,78 @@ export const AuthProvider = ({ children }) => {
     }
   }, [notification]);
 
-  // Validate token and refresh user data
+  // Validate user session
   const validateSession = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setCurrentUser(null);
-        return false;
-      }
-
-      // Set token in api headers
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      // Try to get current user data to validate token
       const user = authService.getCurrentUser();
       if (user) {
-        // This line is critical - set the current user state
         setCurrentUser(user);
         return true;
-      } else {
-        // If user data not available, clear auth state
-        await logout();
-        return false;
       }
+      return false;
     } catch (err) {
       console.error('Session validation error:', err);
       await logout();
       return false;
     } finally {
-      // Important: this ensures we don't keep showing loading state
       if (!initialized) {
         setInitialized(true);
       }
-      // Set loading to false regardless of outcome
       setLoading(false);
     }
   };
 
-  // Initialize auth state with better handling
+  // Initialize auth state
   useEffect(() => {
+    let isMounted = true;
+    
     const initAuth = async () => {
-      // Set loading state
+      if (!isMounted) return;
+      
       setLoading(true);
       
-      // Check if we have auth data stored locally
-      const token = localStorage.getItem('authToken');
-      const userStr = localStorage.getItem('user');
-      
-      if (token && userStr) {
+      try {
+        const userStr = localStorage.getItem('user');
+        
+        if (!userStr) {
+          if (isMounted) {
+            setCurrentUser(null);
+            setLoading(false);
+          }
+          return;
+        }
+        
         try {
-          // Parse the user data
-          const userData = JSON.parse(userStr);
-          
-          // Set the current user directly from localStorage
-          // This avoids any delays in auth state
-          setCurrentUser(userData);
-          
-          // Set API header
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          
-          // Validate session in background (won't delay auth)
-          validateSession();
+          // Set the user from local storage
+          const user = JSON.parse(userStr);
+          if (isMounted) {
+            setCurrentUser(user);
+          }
         } catch (error) {
-          console.error('Error parsing stored user data:', error);
-          // Clean up invalid data
+          console.error('Failed to parse user data:', error);
+          if (isMounted) {
+            await logout();
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (isMounted) {
           await logout();
         }
-      } else {
-        // No stored auth data
-        setLoading(false);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     // Run auth initialization
     initAuth();
-
-    // Set up interval to periodically validate token (but less frequently)
-    const validateInterval = setInterval(() => {
-      if (localStorage.getItem('authToken')) {
-        validateSession();
-      }
-    }, 30 * 60 * 1000); // Check every 30 minutes
-
-    return () => clearInterval(validateInterval);
+    
+    // Clean up on unmount
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Login user
@@ -114,15 +103,9 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await authService.login(credentials);
-      const { token, user } = response;
+      const { user } = response;
       
-      // Store token
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Set auth header
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+      // Update current user state
       setCurrentUser(user);
       
       // Show success notification
@@ -177,9 +160,7 @@ export const AuthProvider = ({ children }) => {
   // Logout user
   const logout = async () => {
     // Clear authentication data
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    delete api.defaults.headers.common['Authorization'];
+    authService.logout();
     
     // Update state
     setCurrentUser(null);
@@ -192,7 +173,7 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is authenticated
   const isAuthenticated = () => {
-    return !!currentUser && !!localStorage.getItem('authToken');
+    return !!currentUser;
   };
 
   // Check if user is instructor

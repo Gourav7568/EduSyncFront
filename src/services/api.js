@@ -1,6 +1,9 @@
 import axios from 'axios';
 import apiConfig from '../config/apiConfig';
 
+// Import services
+import authService from './authService';
+
 // Create an axios instance with the base URL
 const api = axios.create({
   baseURL: apiConfig.getApiBaseUrl(),
@@ -43,9 +46,8 @@ const handleApiError = (error) => {
         break;
       case 401:
         errorMessage = 'Your session has expired. Please log in again.';
-        // Token expired or invalid, clear localStorage
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
+        // Clear user data and redirect to login
+        authService.logout();
         window.location.href = '/login?session=expired';
         break;
       case 403:
@@ -78,13 +80,14 @@ const handleApiError = (error) => {
 
 // Add a request interceptor
 api.interceptors.request.use(
-  (config) => {
-    // Get the token from localStorage
-    const token = localStorage.getItem('authToken');
+  async (config) => {
+    // Get the current user
+    const user = authService.getCurrentUser();
     
-    // If token exists, add it to the request headers
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // If user is authenticated, we can add any necessary headers here
+    if (user) {
+      // Add any custom headers if needed
+      // config.headers['X-User-Id'] = user.id;
     }
     
     return config;

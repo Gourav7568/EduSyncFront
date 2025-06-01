@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import apiClient from "../../services/apiClient";
+import authService from "../../services/authService";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -9,7 +9,6 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -17,18 +16,13 @@ const Login = () => {
   const searchParams = new URLSearchParams(location.search);
   const sessionExpired = searchParams.get("expired") === "true";
 
-  // Minimal check for already logged in state
-  // We'll let the AuthContext handle most of the auth state management
+  // Check if user is already logged in
   useEffect(() => {
-    // If there's already a token and user data, navigate away from login page
-    const token = localStorage.getItem("authToken");
-    const user = localStorage.getItem("user");
-    if (token && user) {
-      console.log("User data already in localStorage, skipping login page");
+    const user = authService.getCurrentUser();
+    if (user) {
       navigate("/", { replace: true });
-      return;
     }
-  }, []);
+  }, [navigate]);
 
   // Remove the useEffect that was causing login loops
   // We'll handle redirection directly in the login function
@@ -54,56 +48,11 @@ const Login = () => {
       console.log("Sending login request to:", url);
 
       // Option 1: Send credentials as-is (camelCase)
-      const response = await apiClient.post(url, credentials);
-      console.log("Login response:", response.data);
-
-      // Option 2: Format for ASP.NET Core API (PascalCase)
-      // Uncomment this if your API expects PascalCase
-      /*
-      const response = await apiClient.post(url, {
-        Email: credentials.email,
-        Password: credentials.password
-      });
-      */
-
-      // Extract data from response
-      const data = response.data;
-      console.log("Processing login data:", data);
-
-      // Debugging what's in the response
-      if (!data) {
-        console.error("No data received from login API");
-        setError("Invalid response from server");
-        setLoading(false);
-        return;
-      }
-
-      // Get the user data from the response
-      const userData = data.user || data.userData || data;
-
-      // Your backend API doesn't return a token, so we'll create one using the userId
-      // This approach works for simple authentication scenarios
-      const generatedToken = userData.userId
-        ? btoa(`${userData.userId}:${userData.email}:${new Date().getTime()}`)
-        : "user-authenticated-token";
-
-      // Store authentication data
-      localStorage.setItem("authToken", generatedToken);
-      localStorage.setItem("user", JSON.stringify(userData));
-      console.log("Saved authentication data with generated token");
-
-      // Update state
-      setCurrentUser(userData);
-      console.log("Login successful, redirecting...");
-
-      // Set the current user first before redirecting
-      setCurrentUser(userData);
-
-      // IMPORTANT: Use window.location.href instead of navigate for a hard redirect
-      // This completely eliminates the blinking by forcing a fresh page load
-      console.log("Login successful - hard redirecting to dashboard");
-
-      // Check if there's a redirect URL stored
+      // Use authService to handle login
+      const { user } = await authService.login(credentials);
+      console.log("Login successful, user:", user);
+      
+      // Redirect to home or intended URL
       const redirectUrl = sessionStorage.getItem("redirectAfterLogin");
       if (redirectUrl) {
         sessionStorage.removeItem("redirectAfterLogin");

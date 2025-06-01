@@ -5,6 +5,23 @@ import apiConfig from '../config/apiConfig';
 const { AUTH } = apiConfig.API_ENDPOINTS;
 
 /**
+ * Store authentication data
+ * @param {Object} userData - User data
+ */
+const storeAuthData = (userData) => {
+  if (userData) {
+    localStorage.setItem('user', JSON.stringify(userData));
+  }
+};
+
+/**
+ * Clear authentication data
+ */
+const clearAuthData = () => {
+  localStorage.removeItem('user');
+};
+
+/**
  * Register a new user
  * @param {Object} userData - User registration data
  * @returns {Promise<Object>} Registered user data
@@ -13,10 +30,7 @@ const register = async (userData) => {
   try {
     console.log('Sending registration data to API:', userData);
     
-    // Format the data for your ASP.NET Core API
-    // Uncomment Option 2 if your API expects PascalCase properties
-    
-    // Option 1: Send as-is with camelCase properties (default)
+    // Format the data for your API
     let dataToSend = userData;
     
     // Option 2: Format for ASP.NET Core API (PascalCase properties)
@@ -65,71 +79,32 @@ const register = async (userData) => {
 /**
  * Login user and store authentication data
  * @param {Object} credentials - User login credentials
- * @returns {Promise<Object>} User data with authentication token
+ * @returns {Promise<Object>} User data
  */
 const login = async (credentials) => {
   try {
     // Make API call to your real backend login endpoint
-    
-    // Format the data for your ASP.NET Core API
-    // Uncomment Option 2 if your API expects PascalCase properties
-    
-    // Option 1: Send as-is with camelCase properties (default)
-    let dataToSend = credentials;
-    
-    // Option 2: Format for ASP.NET Core API (PascalCase properties)
-    // Uncomment this if your API expects PascalCase
-    /*
-    const dataToSend = {
-      Email: credentials.email,
-      Password: credentials.password
-    };
-    */
-    
-    // Specify request config with CORS settings
-    const config = {
+    const response = await api.post(AUTH.LOGIN, credentials, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      // Important for CORS with credentials
       withCredentials: false
-    };
+    });
     
-    // Make the API request with Axios
-    console.log('Sending request to:', AUTH.LOGIN);
-    const response = await api.post(AUTH.LOGIN, dataToSend, config);
-    console.log('Login successful, response:', response.data);
+    // The API should return user data directly
+    const userData = response.data;
     
-    // Extract token and user data from the response
-    // Adjust this based on how your API returns the data
-    const data = response.data;
-    const token = data.token || data.accessToken; 
-    const userData = data.user || data;
-    
-    // Store token in localStorage
-    if (token) {
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('user', JSON.stringify(userData));
+    if (!userData) {
+      throw new Error('No user data received from server');
     }
     
-    return {
-      token: token,
-      user: userData
-    };
+    // Store user data in localStorage
+    storeAuthData(userData);
+    
+    return { user: userData };
   } catch (error) {
-    // Detailed error logging
-    console.error('Login error details:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-      config: {
-        url: error.config?.url,
-        method: error.config?.method,
-        // Don't log sensitive data
-        data: '[REDACTED]'
-      }
-    });
+    console.error('Login failed:', error);
     throw error;
   }
 };
@@ -138,8 +113,8 @@ const login = async (credentials) => {
  * Remove user authentication data
  */
 const logout = () => {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('user');
+  // Clear auth data
+  clearAuthData();
 };
 
 /**
@@ -149,11 +124,10 @@ const logout = () => {
 const getCurrentUser = () => {
   try {
     const userStr = localStorage.getItem('user');
-    if (!userStr) return null;
-    
-    return JSON.parse(userStr);
+    return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
-    console.error('Error parsing user data:', error);
+    console.error('Error getting current user:', error);
+    clearAuthData();
     return null;
   }
 };
@@ -163,9 +137,7 @@ const getCurrentUser = () => {
  * @returns {boolean} Authentication status
  */
 const isAuthenticated = () => {
-  const token = localStorage.getItem('authToken');
-  const user = getCurrentUser();
-  return !!token && !!user;
+  return !!getCurrentUser();
 };
 
 const authService = {

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import courseService from '../services/courseService';
 import assessmentService from '../services/assessmentService';
 import resultService from '../services/resultService';
+import authService from '../services/authService';
 import { useAuth } from '../utils/AuthContext';
 import Loading from '../components/common/Loading';
 
@@ -21,12 +22,49 @@ const Home = () => {
   const navigate = useNavigate();
   const { currentUser, isAuthenticated, isStudent, isInstructor, loading: authLoading } = useAuth();
 
-  // Redirect to login if not authenticated and auth check is complete
+  // Handle authentication and redirects
   useEffect(() => {
-    if (!authLoading && !isAuthenticated()) {
-      navigate('/login');
+    if (authLoading) return;
+    
+    if (!isAuthenticated()) {
+      // Store the current path to redirect back after login
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login') {
+        sessionStorage.setItem('redirectAfterLogin', currentPath);
+      }
+      navigate('/login', { replace: true });
+    } else {
+      // If authenticated, try to load data
+      loadData();
     }
   }, [authLoading, isAuthenticated, navigate]);
+  
+  const loadData = async () => {
+    if (!isAuthenticated()) return;
+    
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Fetch your data here
+      const courses = await courseService.getAllCourses();
+      setRecentCourses(courses.slice(0, 4));
+      
+      // Set other state updates...
+      
+    } catch (err) {
+      console.error('Error loading dashboard data:', err);
+      setError('Failed to load dashboard data. Please try again.');
+      
+      // If unauthorized, clear auth and redirect to login
+      if (err.response?.status === 401) {
+        authService.logout();
+        navigate('/login', { state: { sessionExpired: true } });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch dashboard data when authentication is confirmed
   useEffect(() => {

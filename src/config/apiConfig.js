@@ -14,7 +14,7 @@ const API_ENDPOINTS = {
   AUTH: {
     REGISTER: "/AuthController/register",
     LOGIN: "/AuthController/login",
-    PROFILE: "/AuthController/profile",
+    PROFILE: "/AuthController/profile"
   },
   // Course endpoints
   COURSES: {

@@ -65,7 +65,7 @@ const CourseDetail = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this course?")) {
       try {
-        // Using direct API call with auth token via api service
+        // Using API service to delete the course
         const url = `${COURSES_API}/${id}`;
         console.log("Deleting course at:", url);
 
