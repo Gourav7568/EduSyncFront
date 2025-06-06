@@ -22,8 +22,6 @@ const getResultById = async (id) => {
   return response.data;
 };
 
-console.log("Result data being submitted:", resultData);
-
 const createResult = async (resultData) => {
   // Direct API URL - customize this to match your backend API
   const url = `${API_BASE_URL}/api/Results`;
