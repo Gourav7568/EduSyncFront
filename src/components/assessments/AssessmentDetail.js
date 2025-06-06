@@ -100,7 +100,8 @@ const AssessmentDetail = () => {
         : assessment.questions;
       
       const score = calculateScore(questions, answers);
-      
+      console.log("currentUser:", currentUser);
+
       const resultData = {
         assessmentId: assessment.assessmentId,
         userId: currentUser.userId,
