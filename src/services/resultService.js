@@ -28,18 +28,15 @@ const createResult = async (resultData) => {
   console.log("Creating result at:", url);
 
   // Option 1: Send data as-is (camelCase)
-  const response = await apiClient.post(url, resultData);
+  // const response = await apiClient.post(url, resultData);
 
-  // Option 2: Format for ASP.NET Core API (PascalCase)
-  // Uncomment this if your API expects PascalCase
-  /*
+  // Used for Pascale Case
   const response = await apiClient.post(url, {
     AssessmentId: resultData.assessmentId,
     UserId: resultData.userId,
+    AttemptDate: resultData.attemptDate,
     Score: resultData.score,
-    // Add other fields with PascalCase formatting
   });
-  */
 
   return response.data;
 };

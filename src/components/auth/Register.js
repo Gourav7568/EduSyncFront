@@ -75,7 +75,7 @@ const Register = () => {
 
       // Your exact API endpoint
       const url =
-        "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net/api/Users/register";
+        "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net/api";
       console.log("Sending registration request to:", url);
 
       // You can modify the data format based on your API requirements

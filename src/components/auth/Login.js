@@ -56,11 +56,29 @@ const Login = () => {
         window.location.href = "/";
       }
     } catch (err) {
-      console.error("Login failed:", err);
-      setError(
-        err.response?.data?.message ||
-          "Login failed. Please check your credentials."
-      );
+      console.error("Login failed with error:", err);
+      let errorMessage = "Login failed. Please try again.";
+      
+      if (err.response) {
+        // Server responded with an error status code (4xx, 5xx)
+        if (err.response.status === 401 || err.response.status === 403) {
+          errorMessage = "Invalid email or password. Please try again.";
+        } else if (err.response.data && typeof err.response.data === 'string') {
+          errorMessage = err.response.data;
+        } else if (err.response.data && err.response.data.message) {
+          errorMessage = err.response.data.message;
+        } else {
+          errorMessage = `Server error (${err.response.status}): ${err.response.statusText}`;
+        }
+      } else if (err.request) {
+        // Request was made but no response received
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        // Something happened in setting up the request
+        errorMessage = err.message || "An error occurred. Please try again.";
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

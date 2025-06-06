@@ -126,8 +126,31 @@ const login = async (credentials) => {
     
     return { user: userToStore };
   } catch (error) {
-    console.error('Login failed:', error);
-    throw error;
+    console.error('Login failed with error:', {
+      message: error.message,
+      response: {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        headers: error.response?.headers
+      },
+      request: error.request ? 'Request was made but no response received' : 'No request was made',
+      config: {
+        url: error.config?.url,
+        method: error.config?.method,
+        data: error.config?.data ? JSON.parse(error.config.data) : null
+      }
+    });
+    
+    // Extract a user-friendly error message
+    let errorMessage = 'Login failed. Please try again.';
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    throw new Error(errorMessage);
   }
 };
 
