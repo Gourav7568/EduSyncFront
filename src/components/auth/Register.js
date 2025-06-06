@@ -74,13 +74,10 @@ const Register = () => {
       const { confirmPassword, ...userDataToSubmit } = userData;
 
       // Your exact API endpoint
-      const url =
-        "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net";
-      console.log("Sending registration request to:", url);
-
-      // You can modify the data format based on your API requirements
-      // Option 1: Send data as-is (camelCase)
-      await apiClient.post(url, userDataToSubmit);
+      const response = await apiClient.post(
+        apiConfig.API_ENDPOINTS.AUTH.REGISTER,
+        userDataToSubmit
+      );
 
       // Option 2: Format for ASP.NET Core API (PascalCase)
       // Uncomment this if your API expects PascalCase
@@ -98,6 +95,8 @@ const Register = () => {
       */
 
       // Redirect to login page after successful registration
+      console.log("Registered:", response.data);
+      alert("Registration successful! Please login.");
       navigate("/login", { state: { registered: true } });
     } catch (err) {
       console.error("Registration failed:", err);
