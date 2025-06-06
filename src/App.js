@@ -79,8 +79,18 @@ function AppContent() {
   const location = useLocation();
 
   // List of paths where footer should be hidden
-  const hideFooterPaths = ["/results", "/my-results"];
-
+  const hideFooterPaths = [
+    "/results",
+    "/my-results",
+    "/courses",
+    "/courses/create",
+    "/courses/edit",
+    "/courses/",
+    "/assessments",
+    "/assessments/create",
+    "/assessments/edit",
+    "/assessments/",
+  ];
   // Check if current path is in hideFooterPaths
   const showFooter = !hideFooterPaths.includes(location.pathname);
 
