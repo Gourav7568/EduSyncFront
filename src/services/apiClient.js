@@ -3,7 +3,7 @@ import axios from "axios";
 // Create an axios instance specifically for your ASP.NET Core backend
 const apiClient = axios.create({
   baseURL:
-    "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net",
+    "https://myservice75-dne6hagwa7gzgbbg.canadacentral-01.azurewebsites.net/api",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
