@@ -96,7 +96,7 @@ const Register = () => {
       */
 
       // Redirect to login page after successful registration
-      console.log("Registered:", response.data);
+      // console.log("Registered:", response.data);
       alert("Registration successful! Please login.");
       navigate("/login", { state: { registered: true } });
     } catch (err) {
