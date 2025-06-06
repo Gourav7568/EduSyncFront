@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../../services/apiClient";
+import apiConfig from "../../config/apiConfig";
 
 const Register = () => {
   const [userData, setUserData] = useState({
