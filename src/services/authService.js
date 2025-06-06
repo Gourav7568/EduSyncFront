@@ -1,5 +1,5 @@
-import api from './api';
-import apiConfig from '../config/apiConfig';
+import api from "./api";
+import apiConfig from "../config/apiConfig";
 
 // Get API endpoints for auth operations
 const { AUTH } = apiConfig.API_ENDPOINTS;
@@ -10,7 +10,7 @@ const { AUTH } = apiConfig.API_ENDPOINTS;
  */
 const storeAuthData = (userData) => {
   if (userData) {
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
   }
 };
 
@@ -18,7 +18,7 @@ const storeAuthData = (userData) => {
  * Clear authentication data
  */
 const clearAuthData = () => {
-  localStorage.removeItem('user');
+  localStorage.removeItem("user");
 };
 
 /**
@@ -28,11 +28,11 @@ const clearAuthData = () => {
  */
 const register = async (userData) => {
   try {
-    console.log('Sending registration data to API:', userData);
-    
+    console.log("Sending registration data to API:", userData);
+
     // Format the data for your API
     let dataToSend = userData;
-    
+
     // Option 2: Format for ASP.NET Core API (PascalCase properties)
     // Uncomment this if your API expects PascalCase
     /*
@@ -43,25 +43,25 @@ const register = async (userData) => {
       Role: userData.role
     };
     */
-    
+
     // Specify request config with CORS settings
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
       // Important for CORS with credentials
-      withCredentials: false
+      withCredentials: false,
     };
-    
+
     // Make the API request with Axios
-    console.log('Sending request to:', AUTH.REGISTER);
+    console.log("Sending request to:", AUTH.REGISTER);
     const response = await api.post(AUTH.REGISTER, dataToSend, config);
-    console.log('Registration successful, response:', response.data);
+    console.log("Registration successful, response:", response.data);
     return response.data;
   } catch (error) {
     // Detailed error logging
-    console.error('Registration error details:', {
+    console.error("Registration error details:", {
       message: error.message,
       status: error.response?.status,
       data: error.response?.data,
@@ -69,8 +69,8 @@ const register = async (userData) => {
         url: error.config?.url,
         method: error.config?.method,
         // Don't log sensitive data
-        data: '[REDACTED]'
-      }
+        data: "[REDACTED]",
+      },
     });
     throw error;
   }
@@ -86,33 +86,33 @@ const login = async (credentials) => {
     // Format the credentials to match what the backend expects
     const loginData = {
       email: credentials.email,
-      password: credentials.password
+      password: credentials.password,
     };
-    
-    console.log('Sending login request to:', AUTH.LOGIN);
-    console.log('With data:', { email: loginData.email, password: '***' });
-    
+
+    console.log("Sending login request to:", AUTH.LOGIN);
+    console.log("With data:", { email: loginData.email, password: "***" });
+
     // Make API call to the backend login endpoint
     const response = await api.post(AUTH.LOGIN, loginData, {
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
       withCredentials: false,
-      validateStatus: status => status < 500 // Don't throw for 4xx errors
+      validateStatus: (status) => status < 500, // Don't throw for 4xx errors
     });
-    
-    console.log('Login response status:', response.status);
-    console.log('Login response data:', response.data);
-    
+
+    console.log("Login response status:", response.status);
+    console.log("Login response data:", response.data);
+
     // The API returns a user object with UserId, Name, Email, and Role
     const userData = response.data;
-    console.log('Login response:', userData);
-    
+    console.log("Login response:", userData);
+
     if (!userData || !userData.email) {
-      throw new Error('Invalid response from server');
+      throw new Error("Invalid response from server");
     }
-    
+
     // Store the complete user data
     const userToStore = {
       userId: userData.userId,
@@ -120,36 +120,38 @@ const login = async (credentials) => {
       email: userData.email,
       role: userData.role,
     };
-    
+
     // Store user data in localStorage
     storeAuthData(userToStore);
-    
+
     return { user: userToStore };
   } catch (error) {
-    console.error('Login failed with error:', {
+    console.error("Login failed with error:", {
       message: error.message,
       response: {
         status: error.response?.status,
         statusText: error.response?.statusText,
         data: error.response?.data,
-        headers: error.response?.headers
+        headers: error.response?.headers,
       },
-      request: error.request ? 'Request was made but no response received' : 'No request was made',
+      request: error.request
+        ? "Request was made but no response received"
+        : "No request was made",
       config: {
         url: error.config?.url,
         method: error.config?.method,
-        data: error.config?.data ? JSON.parse(error.config.data) : null
-      }
+        data: error.config?.data ? JSON.parse(error.config.data) : null,
+      },
     });
-    
+
     // Extract a user-friendly error message
-    let errorMessage = 'Login failed. Please try again.';
+    let errorMessage = "Login failed. Please try again.";
     if (error.response?.data?.message) {
       errorMessage = error.response.data.message;
     } else if (error.message) {
       errorMessage = error.message;
     }
-    
+
     throw new Error(errorMessage);
   }
 };
@@ -168,10 +170,10 @@ const logout = () => {
  */
 const getCurrentUser = () => {
   try {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem("user");
     return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
-    console.error('Error getting current user:', error);
+    console.error("Error getting current user:", error);
     clearAuthData();
     return null;
   }
@@ -185,12 +187,28 @@ const isAuthenticated = () => {
   return !!getCurrentUser();
 };
 
+/**
+ * Fetch all users from the backend API
+ * @returns {Promise<Array>} Array of user objects
+ */
+
+const getAllUsers = async () => {
+  try {
+    const response = await api.get(apiConfig.API_ENDPOINTS.AUTH.GET_ALL_USERS);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+};
+
 const authService = {
   register,
   login,
   logout,
   getCurrentUser,
-  isAuthenticated
+  isAuthenticated,
+  getAllUsers,
 };
 
 export default authService;

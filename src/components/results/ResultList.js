@@ -71,6 +71,12 @@ const ResultList = ({ userOnly = false }) => {
           userData = [];
         }
 
+        const userMap = {};
+        userData.forEach((user) => {
+          userMap[user.userId] = user;
+        });
+        setUsers(userMap);
+
         let resultData = await resultService.getAllResults();
 
         // If component unmounted during API call, don't update state

@@ -14,7 +14,8 @@ const API_ENDPOINTS = {
   AUTH: {
     REGISTER: "/Users/register",
     LOGIN: "/Users/login",
-    PROFILE: "/Users/me"  // Note: You might want to add this endpoint in your backend
+    PROFILE: "/Users/me", // Note: You might want to add this endpoint in your backend
+    GET_ALL_USERS: "/Users",
   },
   // Course endpoints
   COURSES: {
