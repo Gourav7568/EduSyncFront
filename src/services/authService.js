@@ -115,7 +115,7 @@ const login = async (credentials) => {
 
     // Store the complete user data
     const userToStore = {
-      userId: userData.userId,
+      id: userData.userId,
       name: userData.name,
       email: userData.email,
       role: userData.role,
