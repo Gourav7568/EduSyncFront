@@ -19,7 +19,7 @@ import apiConfig from "./config/apiConfig";
 
 // Components - Common
 import Navbar from "./components/common/Navbar";
-import Unauthorized from "./components/common/Unauthorized";
+// import Unauthorized from "./components/common/Unauthorized";
 import Notifications from "./components/common/Notifications";
 import Footer from "./components/layout/Footer";
 
@@ -68,9 +68,9 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && currentUser.role !== requiredRole) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+  // if (requiredRole && currentUser.role !== requiredRole) {
+  //   return <Navigate to="/unauthorized" replace />;
+  // }
 
   return children;
 };
@@ -106,7 +106,7 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
+          {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
 
           {/* Course Routes */}
           <Route path="/courses" element={<CourseList />} />
