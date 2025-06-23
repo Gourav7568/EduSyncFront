@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="col-lg-4 mb-4 mb-lg-0">
             <div className="mb-3 d-flex align-items-center">
               <i className="bi bi-book-half me-2 fs-3"></i>
-              <h5 className="mb-0"><strong>EduSync</strong> LMS</h5>
+              <h5 className="mb-0"><strong>EduSync</strong> </h5>
             </div>
             <p className="text-white-50">
               A comprehensive learning management system that helps students master new skills and instructors deliver effective educational content.
@@ -89,7 +89,7 @@ const Footer = () => {
         <div className="row align-items-center">
           <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
             <p className="mb-0 text-white-50">
-              &copy; {currentYear} EduSync LMS. All rights reserved.
+              &copy; {currentYear} EduSync . All rights reserved.
             </p>
           </div>
           <div className="col-md-6 text-center text-md-end">

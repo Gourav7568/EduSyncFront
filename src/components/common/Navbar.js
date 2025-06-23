@@ -40,7 +40,7 @@ const Navbar = () => {
       <div className="container">
         <Link className="navbar-brand d-flex align-items-center" to="/" onClick={handleNavigation}>
           <i className="bi bi-book-half me-2 fs-4"></i>
-          <span><strong>EduSync</strong> LMS</span>
+          <span><strong>EduSync</strong> </span>
         </Link>
         <button
           className="navbar-toggler border-0"

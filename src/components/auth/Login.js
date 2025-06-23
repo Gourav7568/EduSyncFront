@@ -107,7 +107,7 @@ const Login = () => {
                   </div>
                   <div className="mt-auto text-center">
                     <p className="mb-0 small opacity-75">
-                      © {new Date().getFullYear()} EduSync LMS
+                      © {new Date().getFullYear()} EduSync
                     </p>
                   </div>
                 </div>
